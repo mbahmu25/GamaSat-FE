@@ -15,7 +15,11 @@ function App() {
   const [active,setActive] = useState(false)
   const [date, setDate] = useState(null);
   const [value, setValue] = useState();
-
+  const overpas = [
+    "2024-05-01",
+    "2024-05-17",
+    "2024-05-24",
+  ]
 
     return (
     <div className="App h-[100vh]">
@@ -29,7 +33,7 @@ function App() {
         
       </Sidebar>
     
-      <div className="h-screen flex">
+      <div className="h-screen flex ">
         {/* Yellow Section */}
         <div className="bg-yellow-400 w-full h-full" style={{ width: '15%'}}>
           <div className='card flex flex-wrap gap-5 p-fluid m-2'>
@@ -50,7 +54,7 @@ function App() {
         </div>
         {/* Green Section */}
         <div className="bg-green-500 w-full h-full" style={{}}>
-          <div className='bg-green-300 w-full' style={{height: '80%'}}>
+          <div className='bg-green-300 w-full' style={{height: '70%'}}>
             <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -63,7 +67,23 @@ function App() {
               </Marker> */}
             </MapContainer>
           </div>
-          <div className='bg-green-400 w-full' style={{height: '20%'}}></div>
+          <div className='bg-green-400 flex-col w-full' style={{height: '30%'}}>
+            <ul>
+              Overpass Date:
+              {overpas.map((e,i)=>{
+                if (i%2==0)
+                  {
+                    return(<li className='bg-[blue]'>
+                      {e}
+                    </li>)
+                  }else{
+                    return(<li className='bg-[red]'>
+                      {e}
+                    </li>)
+                  }
+              })}
+            </ul>
+          </div>
         </div>
         {/* Blue Section */}
         {/* <div className="bg-blue-500" style={{ height: '33.33%' }}></div> */}
