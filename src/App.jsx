@@ -1,22 +1,11 @@
 // src/app.jsx
-import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { useState } from "react";
-import "leaflet/dist/leaflet.css";
-// import Sidebar from './component/sidebar';
-import { Sidebar } from "primereact/sidebar";
-import { Calendar } from "primereact/calendar";
-import { Slider } from "primereact/slider";
-import { InputText } from "primereact/inputtext";
-import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
-
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import Statistic from "./pages/statistic";
 import React, { useState, useEffect } from "react";
-import "leaflet/dist/leaflet.css";
-import { Sidebar } from "primereact/sidebar";
 import { Calendar } from "primereact/calendar";
 import { Slider } from "primereact/slider";
+import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
+import "leaflet/dist/leaflet.css";
+import Statistic from "./pages/statistic";
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import {
   MapContainer,
@@ -32,7 +21,7 @@ function Main() {
   const [date, setDate] = useState(null);
   const [value, setValue] = useState();
   const [position, setPosition] = useState([
-    -7.770226086602716, 470.3778303793861,
+    -7.770226086602716, 110.3778303793861,
   ]);
 
   // Event untuk menangkap klik pada peta dan memindahkan marker
@@ -212,9 +201,17 @@ function Main() {
               Overpass Date:
               {overpas.map((e, i) => {
                 if (i % 2 == 0) {
-                  return <li className="bg-[blue]">{e}</li>;
+                  return (
+                    <li className="bg-[blue]" key={i}>
+                      {e}
+                    </li>
+                  );
                 } else {
-                  return <li className="bg-[red]">{e}</li>;
+                  return (
+                    <li className="bg-[red]" key={i}>
+                      {e}
+                    </li>
+                  );
                 }
               })}
             </ul>
