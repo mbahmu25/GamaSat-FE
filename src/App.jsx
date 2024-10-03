@@ -1,25 +1,19 @@
-// src/app.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "leaflet/dist/leaflet.css"
-// import Sidebar from './component/sidebar';
-import {Sidebar} from "primereact/sidebar"
+import { Sidebar } from "primereact/sidebar";
 import { Calendar } from 'primereact/calendar';
 import { Slider } from 'primereact/slider';
-import { InputText } from "primereact/inputtext";
-import "primereact/resources/themes/bootstrap4-light-blue/theme.css"
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 function App() {
-  const [active,setActive] = useState(false)
+  const [active, setActive] = useState(false);
   const [date, setDate] = useState(null);
   const [value, setValue] = useState();
-  const overpas = [
-    "2024-05-01",
-    "2024-05-17",
-    "2024-05-24",
-  ]
   const [position, setPosition] = useState([-7.770226086602716, 470.3778303793861]);
+
+  // Event untuk menangkap klik pada peta dan memindahkan marker
   const MapClickHandler = () => {
     useMapEvents({
       click: (event) => {
@@ -29,28 +23,52 @@ function App() {
     return null;
   };
 
+  // State untuk kontrol menu yang aktif
   const [activeMenu, setActiveMenu] = useState('calendar');
+
+  // Fungsi untuk menangani klik pada menu
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
   };
 
+  // Fungsi untuk menghasilkan tanggal acak
+  const generateRandomDates = (numDates) => {
+    const dates = [];
+    for (let i = 0; i < numDates; i++) {
+      const randomDate = new Date(
+        new Date().getTime() + Math.random() * 10000000000
+      );
+      dates.push(randomDate.toISOString().slice(0, 10)); // Format YYYY-MM-DD
+    }
+    return dates;
+  };
 
+  // State untuk menyimpan overpass date
+  const [overpas, setOverpas] = useState([]);
 
-    return (
+  // Mengupdate data overpas setiap 5 detik
+  useEffect(() => {
+    // Fungsi untuk mengupdate data
+    const updateDates = () => {
+      const randomDates = generateRandomDates(10); // Menghasilkan 10 tanggal acak
+      setOverpas(randomDates);
+    };
+
+    // Memanggil fungsi update pertama kali
+    updateDates();
+
+    // Menggunakan setInterval untuk mengupdate data setiap 1 detik
+    const interval = setInterval(updateDates, 1000);
+
+    // Membersihkan interval ketika komponen unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
     <div className="App h-[100vh]">
-      
-      {/* <button onClick={()=>{setActive(true)}}>
-        <div className={`m-2 w-8 h-8 bg-[red] rounded-lg outline outline-black outline-2 transition duration-300 ease-in-out `}>
-          <div className='w-full h-1 bg-white'></div>
-        </div>
-      </button> */}
-      <Sidebar visible={active} onHide={()=>{setActive(!active)}}>
-        
-      </Sidebar>
-    
-      <div className="h-screen flex ">
+      <div className="h-screen flex">
         {/* Yellow Section */}
-        <div className="bg-yellow-400 w-full h-full" style={{ width: '20%'}}>
+        <div className="bg-yellow-400 w-full h-full" style={{ width: '20%' }}>
           <div className="flex mb-6">
             <button
               onClick={() => handleMenuClick('calendar')}
@@ -68,12 +86,13 @@ function App() {
               onClick={() => handleMenuClick('overpass_date')}
               className={`px-4 py-1 ${activeMenu === 'overpass_date' ? 'bg-yellow-400 text-white' : 'bg-yellow-500'}`}
             >
-              overpass Date
+              Overpass Date
             </button>
           </div>
-          
+
+          {/* Calendar Section */}
           {activeMenu === 'calendar' && (
-            <div className='card p-fluid m-2'>
+            <div className="card p-fluid m-2">
               <label htmlFor="buttondisplay" className="font-bold block mb-2 text-center">
                 Calendar
               </label>
@@ -81,43 +100,38 @@ function App() {
             </div>
           )}
 
+          {/* Threshold Section */}
           {activeMenu === 'threshold' && (
-              <div className='ml-5 mr-5'>
-                <label htmlFor="buttondisplay" className="font-bold block mt-2 mb-2 text-center">
-                  Threshold = {value}
-                </label>
-                <div className="w-14rem">
-                      {/* <InputText value={value} onChange={(e) => setValue(e.target.value)} maxLength={15} /> */}
-                      <Slider value={value} onChange={(e) => setValue(e.value)} step={1} max={15} />
-                </div>
+            <div className="ml-5 mr-5">
+              <label htmlFor="buttondisplay" className="font-bold block mt-2 mb-2 text-center">
+                Threshold = {value}
+              </label>
+              <div className="w-14rem">
+                <Slider value={value} onChange={(e) => setValue(e.value)} step={1} max={15} />
               </div>
+            </div>
           )}
 
+          {/* Overpass Date Section */}
           {activeMenu === 'overpass_date' && (
-              <div className='ml-3 mr-3'>
-                  <ul>
-                    Overpass Date:
-                    {overpas.map((e,i)=>{
-                      if (i%2==0)
-                        {
-                          return(<li className='bg-[blue] bg-opacity-25'>
-                            {e}
-                          </li>)
-                        }else{
-                          return(<li className='bg-[red] bg-opacity-25'>
-                            {e}
-                          </li>)
-                        }
-                    })}
-                  </ul>
-              </div>
+            <div className="ml-3 mr-3">
+              <ul>
+                Overpass Date:
+                {overpas.map((e, i) => {
+                  return (
+                    <li key={i} className={`${i % 2 === 0 ? 'bg-[blue]' : 'bg-[red]'} bg-opacity-25`}>
+                      {e}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           )}
         </div>
 
-
-        {/* Green Section */}
-        <div className="bg-green-500 w-full h-full" style={{}}>
-          <div className='bg-green-300 w-full' style={{height: '70%'}}>
+        {/* Green Section (Map) */}
+        <div className="bg-green-500 w-full h-full">
+          <div className="bg-green-300 w-full" style={{ height: '70%' }}>
             <MapContainer center={position} zoom={13} style={{ height: "100vh", width: "100%" }}>
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -131,12 +145,7 @@ function App() {
               </Marker>
             </MapContainer>
           </div>
-          {/* <div className='bg-green-400 flex-col w-full' style={{height: '30%'}}>
-            
-          </div> */}
         </div>
-        {/* Blue Section */}
-        {/* <div className="bg-blue-500" style={{ height: '33.33%' }}></div> */}
       </div>
     </div>
   );
